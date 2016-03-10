@@ -13,5 +13,5 @@ var Providers = map[string]Provider{
 type Provider interface {
 	GetName() string
 	HandleRedirect(r *http.Request) (string, error)
-	Authenticate(driver selenium.WebDriver, appID, username, password, redirectURL string) error
+	Authenticate(driver selenium.WebDriver, appID, appSecret, username, password, redirectURL string) (string, error)
 }

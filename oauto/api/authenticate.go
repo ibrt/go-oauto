@@ -14,6 +14,7 @@ import (
 type AuthenticateRequest struct {
 	Provider string `json:"provider"`
 	AppID string `json:"appId"`
+	AppSecret string `json:"appSecret"`
 	UserName string `json:"username"`
 	Password string `json:"password"`
 }
@@ -37,7 +38,7 @@ func HandleAuthenticate(config *config.Config, r *http.Request, baseURL string) 
 
 	// Perform authentication flow.
 	redirectURL := fmt.Sprintf("%v%v", baseURL, redirect.MakePath(provider))
-	token, err := driver.PerformAuthentication(config, provider, req.AppID, req.UserName, req.Password, redirectURL)
+	token, err := driver.PerformAuthentication(config, provider, req.AppID, req.AppSecret, req.UserName, req.Password, redirectURL)
 	if err != nil {
 		return nil, errors.Wrap(err, 0)
 	}
