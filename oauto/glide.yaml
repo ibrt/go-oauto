@@ -1,0 +1,5 @@
+package: github.com/ibrt/go-oauto/oauto
+import:
+- package: github.com/go-errors/errors
+- package: sourcegraph.com/sourcegraph/go-selenium
+- package: github.com/kelseyhightower/envconfig

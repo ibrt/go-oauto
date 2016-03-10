@@ -1,0 +1,10 @@
+hash: 18a598147033dd42f078a6acf86c84b498a56b744c4787369b4e53d3145a093c
+updated: 2016-03-09T13:16:12.518019-08:00
+imports:
+- name: github.com/go-errors/errors
+  version: a41850380601eeb43f4350f7d17c6bbd8944aaf8
+- name: github.com/kelseyhightower/envconfig
+  version: 224e93f15cc827cbc08a7694ba9ab6e7d1c10039
+- name: sourcegraph.com/sourcegraph/go-selenium
+  version: 4406fa7f9fc5e9838c31ce6aaec2c46b49c27816
+devImports: []
