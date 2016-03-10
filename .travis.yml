@@ -10,7 +10,7 @@ services:
 install:
   - wget https://github.com/Masterminds/glide/releases/download/0.9.1/glide-0.9.1-linux-amd64.tar.gz
   - tar xvzf glide-0.9.1-linux-amd64.tar.gz
-  - sudo linux-amd64/glide /usr/bin/glide
+  - sudo cp linux-amd64/glide /usr/bin/glide
   - cd "$GOPATH/src/github.com/ibrt/go-oauto/oauto" && glide install
   - go generate github.com/ibrt/go-oauto/oauto/standalone
   - docker run -p 10000:10000 -p 4444:4444 -d oauto:latest
