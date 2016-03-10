@@ -86,6 +86,12 @@ func (g *Google) Authenticate(driver selenium.WebDriver, appID, appSecret, usern
 			return "", errors.Wrap(err, 0)
 		}
 	} else {
+
+		url, _ := driver.CurrentURL()
+		fmt.Printf("%s\n", url)
+		src, _ := driver.PageSource()
+		fmt.Printf("%s\n", src)
+
 		if url, _ := driver.CurrentURL(); !strings.HasPrefix(url, redirectURL) {
 			return "", errors.Wrap(err, 0)
 		}
