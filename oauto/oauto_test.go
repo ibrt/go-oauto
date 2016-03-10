@@ -49,7 +49,7 @@ func TestGoogle(t *testing.T) {
 	resp, err := client.Authenticate(
 		testConfig.BaseURL,
 		&api.AuthenticateRequest{
-			Provider: "facebook",
+			Provider: "google",
 			AppID: testConfig.GoogleAppID,
 			AppSecret: testConfig.GoogleAppSecret,
 			UserName: testConfig.GoogleUserName,
