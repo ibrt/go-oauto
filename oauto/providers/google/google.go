@@ -75,9 +75,11 @@ func (g *Google) Authenticate(driver selenium.WebDriver, appID, appSecret, usern
 	element, err = driver.FindElement(selenium.ById, authorizeButtonID)
 	if err == nil {
 
-		fmt.Printf("%s\n", driver.CurrentURL())
-		fmt.Printf("%s\n", driver.PageSource())
-		
+		url, _ := driver.CurrentURL()
+		fmt.Printf("%s\n", url)
+		src, _ := driver.PageSource()
+		fmt.Printf("%s\n", src)
+
 		// Wait for the button to become clickable.
 		time.Sleep(2 * time.Second)
 		if err := element.Click(); err != nil {
