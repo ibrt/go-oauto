@@ -14,7 +14,7 @@ type Facebook struct {
 }
 
 const (
-	authURL = "https://www.facebook.com/dialog/oauth?client_id=%v&redirect_uri=%v"
+	authURL = "https://www.facebook.com/dialog/oauth?client_id=%v&redirect_uri=%v?scope=public_profile,email"
 	exchangeURL = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=%v&redirect_uri=%v&client_secret=%v&code=%v"
 	emailFieldName = "email"
 	passwordFieldName = "pass"

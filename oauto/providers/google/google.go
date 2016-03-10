@@ -17,7 +17,7 @@ type Google struct {
 }
 
 const (
-	authURL = "https://accounts.google.com/o/oauth2/auth?client_id=%v&redirect_uri=%v&response_type=code&approval_prompt=force&scope=email"
+	authURL = "https://accounts.google.com/o/oauth2/auth?client_id=%v&redirect_uri=%v&response_type=code&approval_prompt=force&scope=https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
 	exchangeURL = "https://accounts.google.com/o/oauth2/token"
 	emailFieldName = "Email"
 	passwordFieldName = "Passwd"
