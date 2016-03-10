@@ -1,0 +1,15 @@
+sudo: required
+language: go
+
+go:
+  - 1.6
+
+services:
+  - docker
+
+install:
+  - cd "$GOPATH/src/github.com/ibrt/go-oauto/oauto" && glide install
+  - go generate github.com/ibrt/go-oauto/oauto/standalone
+
+script: go test -v github.com/ibrt/go-oauto/oauto
+
