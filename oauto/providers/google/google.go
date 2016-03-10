@@ -1,37 +1,40 @@
-package facebook
+package google
 
 import (
 	"net/http"
 	"sourcegraph.com/sourcegraph/go-selenium"
 	"fmt"
-	"strings"
 	"github.com/go-errors/errors"
+	"time"
+	"strings"
 	"encoding/json"
+	"bytes"
+	"net/url"
 )
 
-type Facebook struct {
+type Google struct {
 	// Intentionally empty.
 }
 
 const (
-	authURL = "https://www.facebook.com/dialog/oauth?client_id=%v&redirect_uri=%v"
-	exchangeURL = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=%v&redirect_uri=%v&client_secret=%v&code=%v"
-	emailFieldName = "email"
-	passwordFieldName = "pass"
-	loginButtonName = "login"
-	authorizeButtonName = "__CONFIRM__"
+	authURL = "https://accounts.google.com/o/oauth2/auth?client_id=%v&redirect_uri=%v&response_type=code&approval_prompt=force&scope=email"
+	exchangeURL = "https://accounts.google.com/o/oauth2/token"
+	emailFieldName = "Email"
+	passwordFieldName = "Passwd"
+	loginButtonName="signIn"
+	authorizeButtonID = "submit_approve_access"
 	tokenDivID = "token"
 )
 
-func NewFacebook() *Facebook {
-	return &Facebook{}
+func NewGoogle() *Google {
+	return &Google{}
 }
 
-func (f *Facebook) GetName() string {
-	return "facebook"
+func (g *Google) GetName() string {
+	return "google"
 }
 
-func (f *Facebook) HandleRedirect(r *http.Request) (string, error) {
+func (g *Google) HandleRedirect(r *http.Request) (string, error) {
 	if token := r.URL.Query().Get("code"); len(token) > 0 {
 		return token, nil
 	} else {
@@ -39,13 +42,13 @@ func (f *Facebook) HandleRedirect(r *http.Request) (string, error) {
 	}
 }
 
-func (f *Facebook) Authenticate(driver selenium.WebDriver, appID, appSecret, username, password, redirectURL string) (string, error) {
-	// Load FB auth page.
+func (g *Google) Authenticate(driver selenium.WebDriver, appID, appSecret, username, password, redirectURL string) (string, error) {
+	// Load Google auth page.
 	if err := driver.Get(fmt.Sprintf(authURL, appID, redirectURL)); err != nil {
 		return "", errors.Wrap(err, 0)
 	}
 
-	// Fill e-mail and password fields, click "Login".
+	// Fill e-mail and password fields, click "Sign in".
 	element, err := driver.FindElement(selenium.ByName, emailFieldName)
 	if err != nil {
 		return "", errors.Wrap(err, 0)
@@ -69,8 +72,10 @@ func (f *Facebook) Authenticate(driver selenium.WebDriver, appID, appSecret, use
 	}
 
 	// If needed, click authorize the app. If the app is already authorized, just continue.
-	element, err = driver.FindElement(selenium.ByName, authorizeButtonName)
+	element, err = driver.FindElement(selenium.ById, authorizeButtonID)
 	if err == nil {
+		// Wait for the button to become clickable.
+		time.Sleep(1 * time.Second)
 		if err := element.Click(); err != nil {
 			return "", errors.Wrap(err, 0)
 		}
@@ -80,7 +85,7 @@ func (f *Facebook) Authenticate(driver selenium.WebDriver, appID, appSecret, use
 		}
 	}
 
-	// Extract code token from the redirect page.
+	// Extract the code from the redirect page.
 	element, err = driver.FindElement(selenium.ById, tokenDivID)
 	if err != nil {
 		return "", errors.Wrap(err, 0)
@@ -90,13 +95,21 @@ func (f *Facebook) Authenticate(driver selenium.WebDriver, appID, appSecret, use
 		return "", errors.Wrap(err, 0)
 	}
 
+	// Build the exchange request body.
+	exchangeBody := url.Values{}
+	exchangeBody.Set("client_id", appID)
+	exchangeBody.Set("client_secret", appSecret)
+	exchangeBody.Set("redirect_uri", redirectURL)
+	exchangeBody.Set("code", code)
+	exchangeBody.Set("grant_type", "authorization_code")
+
 	// Exchange the code for a OAuth token using the secret app id.
-	resp, err := http.Get(fmt.Sprintf(exchangeURL, appID, redirectURL, appSecret, code))
+	resp, err := http.Post(exchangeURL, "application/x-www-form-urlencoded", bytes.NewBufferString(exchangeBody.Encode()))
 	if err != nil {
 		return "", errors.Wrap(err, 0)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return "", errors.Errorf("Token exchange request failed with status %v.", resp.StatusCode)
+		//return "", errors.Errorf("Token exchange request failed with status %v.", resp.StatusCode)
 	}
 	exchangeResp := make(map[string]interface{})
 	if err := json.NewDecoder(resp.Body).Decode(&exchangeResp); err != nil {
