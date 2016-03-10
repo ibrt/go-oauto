@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"github.com/go-errors/errors"
 	"bytes"
+	"io/ioutil"
 )
 
 func Authenticate(baseURL string, request *api.AuthenticateRequest) (*api.AuthenticateResponse, error) {
@@ -20,9 +21,14 @@ func Authenticate(baseURL string, request *api.AuthenticateRequest) (*api.Authen
 		return nil, errors.Wrap(err, 0)
 	}
 
-	authResp := &api.AuthenticateResponse{}
-	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
+	respBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
 		return nil, errors.Wrap(err, 0)
+	}
+
+	authResp := &api.AuthenticateResponse{}
+	if err := json.Unmarshal(respBytes, &authResp); err != nil {
+		return nil, errors.WrapPrefix(err, string(respBytes), 0)
 	}
 
 	if resp.StatusCode != http.StatusOK {
