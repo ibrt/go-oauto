@@ -71,6 +71,25 @@ func (g *Google) Authenticate(driver selenium.WebDriver, appID, appSecret, usern
 		return "", errors.Wrap(err, 0)
 	}
 
+	// If needed, go through the extra security flow.
+	element, err = driver.FindElement(selenium.ById, "MapChallenge")
+	if err == nil {
+		if err := element.Click(); err != nil {
+			return "", errors.Wrap(err, 0)
+		}
+		element, err = driver.FindElement(selenium.ById, "address")
+		if err := element.SendKeys("San Francisco"); err != nil {
+			return "", errors.Wrap(err, 0)
+		}
+		element, err = driver.FindElement(selenium.ById, "submitChallenge")
+		if err != nil {
+			return "", errors.Wrap(err, 0)
+		}
+		if err := element.Click(); err != nil {
+			return "", errors.Wrap(err, 0)
+		}
+	}
+
 	// If needed, click authorize the app. If the app is already authorized, just continue.
 	element, err = driver.FindElement(selenium.ById, authorizeButtonID)
 	if err == nil {
