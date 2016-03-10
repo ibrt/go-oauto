@@ -10,6 +10,7 @@ services:
 install:
   - cd "$GOPATH/src/github.com/ibrt/go-oauto/oauto" && glide install
   - go generate github.com/ibrt/go-oauto/oauto/standalone
+  - docker run -p 10000:10000 -p 4444:4444 -d oauto:latest
 
 script: go test -v github.com/ibrt/go-oauto/oauto
 

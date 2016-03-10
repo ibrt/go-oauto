@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+IMAGE_NAME="oauto"
 PKG_NAME="$(go list)"
 BINARY_NAME="${PKG_NAME##*/}"
 ROOT_DIR="$(pwd)/../.."
@@ -25,7 +26,7 @@ fi
 # Build Docker image.
 echo "-> Building Docker image..."
 cp "$ROOT_DIR/Dockerfile" .
-docker build -t "connect-$BINARY_NAME:untested" .
+docker build -t "$IMAGE_NAME" .
 if [[ $? != 0 ]]; then
     err "Error: Cannot build Docker image."
     exit 1
