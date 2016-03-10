@@ -6,6 +6,7 @@ import (
 	"os"
 	"github.com/ibrt/go-oauto/oauto/api"
 	"github.com/ibrt/go-oauto/oauto/client"
+	"github.com/go-errors/errors"
 )
 
 type TestConfig struct {
@@ -38,7 +39,7 @@ func TestFacebook(t *testing.T) {
 			Password: testConfig.FacebookPassword,
 		})
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal(err.(*errors.Error).ErrorStack())
 	}
 	if len(resp.Token) == 0 {
 		t.Fatal("Missing token in Facebook authentication response.")
@@ -56,7 +57,7 @@ func TestGoogle(t *testing.T) {
 			Password: testConfig.GooglePassword,
 		})
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal(err.(*errors.Error).ErrorStack())
 	}
 	if len(resp.Token) == 0 {
 		t.Fatal("Missing token in Google authentication response.")
