@@ -27,7 +27,7 @@ func Authenticate(baseURL string, request *api.AuthenticateRequest) (*api.Authen
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.Errorf("Authenticate request failed with status %v: '%+v'.", resp.StatusCode, respBytes)
+		return nil, errors.Errorf("Authenticate request failed with status %v: '%s'.", resp.StatusCode, respBytes)
 	}
 
 	authResp := &api.AuthenticateResponse{}
