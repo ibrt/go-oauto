@@ -46,7 +46,7 @@ func TestFacebook(t *testing.T) {
 	}
 }
 
-func TestGoogle(t *testing.T) {
+/*func TestGoogle(t *testing.T) {
 	resp, err := client.Authenticate(
 		testConfig.BaseURL,
 		&api.AuthenticateRequest{
@@ -62,4 +62,4 @@ func TestGoogle(t *testing.T) {
 	if len(resp.Token) == 0 {
 		t.Fatal("Missing token in Google authentication response.")
 	}
-}
+}*/
