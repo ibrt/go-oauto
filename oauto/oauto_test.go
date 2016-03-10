@@ -11,6 +11,7 @@ import (
 type TestConfig struct {
 	BaseURL string `envconfig:"BASE_URL" required:"true"`
 	FacebookAppID string `envconfig:"FACEBOOK_APP_ID" required:"true"`
+	FacebookAppSecret string `envconfig:"FACEBOOK_APP_SECRET" required:"true"`
 	FacebookUserName string `envconfig:"FACEBOOK_USER_NAME" required:"true"`
 	FacebookPassword string `envconfig:"FACEBOOK_PASSWORD" required:"true"`
 }
@@ -28,6 +29,7 @@ func TestFacebook(t *testing.T) {
 		&api.AuthenticateRequest{
 			Provider: "facebook",
 			AppID: testConfig.FacebookAppID,
+			AppSecret: testConfig.FacebookAppSecret,
 			UserName: testConfig.FacebookUserName,
 			Password: testConfig.FacebookPassword,
 		})
