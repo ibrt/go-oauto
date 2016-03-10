@@ -5,6 +5,7 @@ import (
 	"github.com/ibrt/go-oauto/oauto/config"
 	"encoding/json"
 	"fmt"
+	"github.com/go-errors/errors"
 )
 
 type ApiHandler func(config *config.Config, r *http.Request, baseURL string) (interface{}, error)
@@ -24,7 +25,7 @@ func MakeHandlerFunc(config *config.Config, apiHandler ApiHandler) http.HandlerF
 			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(resp)
 		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, err.(*errors.Error).ErrorStack(), http.StatusInternalServerError)
 		}
 	}
 }
