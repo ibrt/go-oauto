@@ -74,6 +74,9 @@ func (g *Google) Authenticate(driver selenium.WebDriver, appID, appSecret, usern
 	// If needed, click authorize the app. If the app is already authorized, just continue.
 	element, err = driver.FindElement(selenium.ById, authorizeButtonID)
 	if err == nil {
+		if err := element.Click(); err != nil {
+			return "", errors.Wrap(err, 0)
+		}
 		// Wait for the button to become clickable.
 		time.Sleep(10 * time.Second)
 		if err := element.Click(); err != nil {
