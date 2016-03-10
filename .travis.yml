@@ -13,7 +13,11 @@ install:
   - sudo cp linux-amd64/glide /usr/bin/glide
   - cd "$GOPATH/src/github.com/ibrt/go-oauto/oauto" && glide install
   - go generate github.com/ibrt/go-oauto/oauto/standalone
-  - docker run -p 10000:10000 -p 4444:4444 -d oauto:latest
+  - docker run -p 10000:10000 -p 4444:4444 -d oauto
 
 script: go test -v github.com/ibrt/go-oauto/oauto
 
+after_success:
+  - docker login -e "$DOCKER_EMAIL" -u "$DOCKER_USER_NAME" -p "$DOCKER_PASS"
+  - docker tag oauto:latest ibrt/oauto:"$(if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo "$TRAVIS_BRANCH"; fi)"
+  - docker push ibrt/oauto
