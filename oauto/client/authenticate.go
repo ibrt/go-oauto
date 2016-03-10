@@ -19,13 +19,14 @@ func Authenticate(baseURL string, request *api.AuthenticateRequest) (*api.Authen
 	if err != nil {
 		return nil, errors.Wrap(err, 0)
 	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, errors.Errorf("Authenticate request failed with status %v.", resp.StatusCode)
-	}
 
 	authResp := &api.AuthenticateResponse{}
 	if err := json.NewDecoder(resp.Body).Decode(&authResp); err != nil {
 		return nil, errors.Wrap(err, 0)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.Errorf("Authenticate request failed with status %v: '%+v'.", resp.StatusCode, authResp)
 	}
 
 	return authResp, nil
