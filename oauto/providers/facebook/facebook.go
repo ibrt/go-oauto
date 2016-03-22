@@ -1,12 +1,12 @@
 package facebook
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/go-errors/errors"
 	"net/http"
 	"sourcegraph.com/sourcegraph/go-selenium"
-	"fmt"
 	"strings"
-	"github.com/go-errors/errors"
-	"encoding/json"
 )
 
 type Facebook struct {
@@ -14,13 +14,13 @@ type Facebook struct {
 }
 
 const (
-	authURL = "https://www.facebook.com/dialog/oauth?client_id=%v&redirect_uri=%v&scope=public_profile,email"
-	exchangeURL = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=%v&redirect_uri=%v&client_secret=%v&code=%v"
-	emailFieldName = "email"
-	passwordFieldName = "pass"
-	loginButtonName = "login"
+	authURL             = "https://www.facebook.com/dialog/oauth?client_id=%v&redirect_uri=%v&scope=public_profile,email"
+	exchangeURL         = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=%v&redirect_uri=%v&client_secret=%v&code=%v"
+	emailFieldName      = "email"
+	passwordFieldName   = "pass"
+	loginButtonName     = "login"
 	authorizeButtonName = "__CONFIRM__"
-	tokenDivID = "token"
+	tokenDivID          = "token"
 )
 
 func NewFacebook() *Facebook {
@@ -39,28 +39,28 @@ func (f *Facebook) HandleRedirect(r *http.Request) (string, error) {
 	}
 }
 
-func (f *Facebook) Authenticate(driver selenium.WebDriver, appID, appSecret, username, password, redirectURL string) (string, error) {
+func (f *Facebook) Authenticate(webDriver selenium.WebDriver, appID, appSecret, username, password, redirectURL string) (string, error) {
 	// Load FB auth page.
-	if err := driver.Get(fmt.Sprintf(authURL, appID, redirectURL)); err != nil {
+	if err := webDriver.Get(fmt.Sprintf(authURL, appID, redirectURL)); err != nil {
 		return "", errors.Wrap(err, 0)
 	}
 
 	// Fill e-mail and password fields, click "Login".
-	element, err := driver.FindElement(selenium.ByName, emailFieldName)
+	element, err := webDriver.FindElement(selenium.ByName, emailFieldName)
 	if err != nil {
 		return "", errors.Wrap(err, 0)
 	}
 	if err := element.SendKeys(username); err != nil {
 		return "", errors.Wrap(err, 0)
 	}
-	element, err = driver.FindElement(selenium.ByName, passwordFieldName)
+	element, err = webDriver.FindElement(selenium.ByName, passwordFieldName)
 	if err != nil {
 		return "", errors.Wrap(err, 0)
 	}
 	if err := element.SendKeys(password); err != nil {
 		return "", errors.Wrap(err, 0)
 	}
-	element, err = driver.FindElement(selenium.ByName, loginButtonName)
+	element, err = webDriver.FindElement(selenium.ByName, loginButtonName)
 	if err != nil {
 		return "", errors.Wrap(err, 0)
 	}
@@ -69,19 +69,19 @@ func (f *Facebook) Authenticate(driver selenium.WebDriver, appID, appSecret, use
 	}
 
 	// If needed, click authorize the app. If the app is already authorized, just continue.
-	element, err = driver.FindElement(selenium.ByName, authorizeButtonName)
+	element, err = webDriver.FindElement(selenium.ByName, authorizeButtonName)
 	if err == nil {
 		if err := element.Click(); err != nil {
 			return "", errors.Wrap(err, 0)
 		}
 	} else {
-		if url, _ := driver.CurrentURL(); !strings.HasPrefix(url, redirectURL) {
+		if url, _ := webDriver.CurrentURL(); !strings.HasPrefix(url, redirectURL) {
 			return "", errors.Wrap(err, 0)
 		}
 	}
 
 	// Extract code token from the redirect page.
-	element, err = driver.FindElement(selenium.ById, tokenDivID)
+	element, err = webDriver.FindElement(selenium.ById, tokenDivID)
 	if err != nil {
 		return "", errors.Wrap(err, 0)
 	}

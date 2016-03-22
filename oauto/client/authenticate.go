@@ -1,13 +1,13 @@
 package client
 
 import (
-	"github.com/ibrt/go-oauto/oauto/api"
-	"net/http"
-	"fmt"
-	"encoding/json"
-	"github.com/go-errors/errors"
 	"bytes"
+	"encoding/json"
+	"fmt"
+	"github.com/go-errors/errors"
+	"github.com/ibrt/go-oauto/oauto/api"
 	"io/ioutil"
+	"net/http"
 )
 
 func Authenticate(baseURL string, request *api.AuthenticateRequest) (*api.AuthenticateResponse, error) {

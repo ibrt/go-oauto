@@ -3,12 +3,12 @@
 package main
 
 import (
-	"net/http"
-	"github.com/ibrt/go-oauto/oauto/redirect"
-	"github.com/ibrt/go-oauto/oauto/config"
-	"github.com/kelseyhightower/envconfig"
-	"github.com/ibrt/go-oauto/oauto/api"
 	"fmt"
+	"github.com/ibrt/go-oauto/oauto/api"
+	"github.com/ibrt/go-oauto/oauto/config"
+	"github.com/ibrt/go-oauto/oauto/redirect"
+	"github.com/kelseyhightower/envconfig"
+	"net/http"
 )
 
 func main() {
@@ -18,5 +18,7 @@ func main() {
 	redirect.RegisterRedirectRoutes()
 	api.RegisterApiRoutes(config)
 
-	http.ListenAndServe(fmt.Sprintf(":%v", config.ServerPort), nil)
+	if err := http.ListenAndServe(fmt.Sprintf(":%v", config.ServerPort), nil); err != nil {
+		panic(err)
+	}
 }

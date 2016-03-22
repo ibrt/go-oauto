@@ -1,11 +1,11 @@
 package api
 
 import (
-	"net/http"
-	"github.com/ibrt/go-oauto/oauto/config"
 	"encoding/json"
 	"fmt"
 	"github.com/go-errors/errors"
+	"github.com/ibrt/go-oauto/oauto/config"
+	"net/http"
 )
 
 type ApiHandler func(config *config.Config, r *http.Request, baseURL string) (interface{}, error)

@@ -1,10 +1,10 @@
 package redirect
 
 import (
-	"net/http"
+	"fmt"
 	"github.com/ibrt/go-oauto/oauto/providers"
 	"html/template"
-	"fmt"
+	"net/http"
 )
 
 var redirectTemplate = template.Must(template.New("redirect").Parse(`

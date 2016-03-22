@@ -1,22 +1,22 @@
 package api
 
 import (
-	"net/http"
 	"encoding/json"
-	"github.com/go-errors/errors"
-	"github.com/ibrt/go-oauto/oauto/providers"
-	"github.com/ibrt/go-oauto/oauto/driver"
 	"fmt"
-	"github.com/ibrt/go-oauto/oauto/redirect"
+	"github.com/go-errors/errors"
 	"github.com/ibrt/go-oauto/oauto/config"
+	"github.com/ibrt/go-oauto/oauto/driver"
+	"github.com/ibrt/go-oauto/oauto/providers"
+	"github.com/ibrt/go-oauto/oauto/redirect"
+	"net/http"
 )
 
 type AuthenticateRequest struct {
-	Provider string `json:"provider"`
-	AppID string `json:"appId"`
+	Provider  string `json:"provider"`
+	AppID     string `json:"appId"`
 	AppSecret string `json:"appSecret"`
-	UserName string `json:"username"`
-	Password string `json:"password"`
+	UserName  string `json:"username"`
+	Password  string `json:"password"`
 }
 
 type AuthenticateResponse struct {

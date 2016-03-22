@@ -1,15 +1,17 @@
 package providers
 
 import (
-	"net/http"
+	"github.com/ibrt/go-oauto/oauto/providers/digits"
 	"github.com/ibrt/go-oauto/oauto/providers/facebook"
-	"sourcegraph.com/sourcegraph/go-selenium"
 	"github.com/ibrt/go-oauto/oauto/providers/google"
+	"net/http"
+	"sourcegraph.com/sourcegraph/go-selenium"
 )
 
 var Providers = map[string]Provider{
 	"facebook": facebook.NewFacebook(),
-	"google": google.NewGoogle(),
+	"google":   google.NewGoogle(),
+	"digits":   digits.NewDigits(),
 }
 
 type Provider interface {
