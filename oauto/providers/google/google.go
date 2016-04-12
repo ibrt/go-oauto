@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-errors/errors"
 	"net/http"
+	"net/url"
 	"sourcegraph.com/sourcegraph/go-selenium"
 	"strings"
 	"time"
@@ -117,12 +118,26 @@ func (g *Google) Authenticate(webDriver selenium.WebDriver, appID, appSecret, us
 		}
 	}
 
+	// Wait until redirect is complete.
 	currentURL, err := waitForCurrentURLPrefix(webDriver, redirectURL)
 	if err != nil {
 		return "", errors.Wrap(err, 0)
 	}
 
-	return strings.Split(currentURL, "#")[1], nil
+	// Parse redirect URL and extract id_token from fragment.
+	parsedURL, err := url.Parse(currentURL)
+	if err != nil {
+		return "", errors.Wrap(err, 0)
+	}
+	values, err := url.ParseQuery(parsedURL.Fragment)
+	if err != nil {
+		return "", errors.Wrap(err, 0)
+	}
+	if values.Get("id_token") == "" {
+		return "", errors.New("Missing 'id_token' key in redirect URL fragment.")
+	}
+
+	return values.Get("id_token"), nil
 }
 
 func waitForCurrentURLPrefix(webDriver selenium.WebDriver, prefix string) (string, error) {
