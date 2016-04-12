@@ -1,12 +1,9 @@
 package google
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/go-errors/errors"
 	"net/http"
-	"net/url"
 	"sourcegraph.com/sourcegraph/go-selenium"
 	"strings"
 	"time"
@@ -17,13 +14,11 @@ type Google struct {
 }
 
 const (
-	authURL           = "https://accounts.google.com/o/oauth2/auth?client_id=%v&redirect_uri=%v&response_type=code&approval_prompt=force&scope=https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
-	exchangeURL       = "https://accounts.google.com/o/oauth2/token"
+	authURL           = "https://accounts.google.com/o/oauth2/auth?client_id=%v&redirect_uri=%v&response_type=id_token&approval_prompt=force&scope=https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
 	emailFieldName    = "Email"
 	passwordFieldName = "Passwd"
 	signInButtonName  = "signIn"
 	authorizeButtonID = "submit_approve_access"
-	tokenDivID        = "token"
 )
 
 func NewGoogle() *Google {
@@ -35,11 +30,8 @@ func (g *Google) GetName() string {
 }
 
 func (g *Google) HandleRedirect(r *http.Request) (string, error) {
-	if token := r.URL.Query().Get("code"); len(token) > 0 {
-		return token, nil
-	} else {
-		return "", errors.Errorf("Missing 'code' query string parameter in request '%s'.", r.URL)
-	}
+	// In this case we get the token from the URL fragment (which is not passed to the server).
+	return "", nil
 }
 
 func (g *Google) Authenticate(webDriver selenium.WebDriver, appID, appSecret, username, password, redirectURL string) (string, error) {
@@ -125,36 +117,24 @@ func (g *Google) Authenticate(webDriver selenium.WebDriver, appID, appSecret, us
 		}
 	}
 
-	// Extract the code from the redirect page.
-	element, err = webDriver.FindElement(selenium.ById, tokenDivID)
-	if err != nil {
-		return "", errors.Wrap(err, 0)
-	}
-	code, err := element.Text()
+	currentURL, err := waitForCurrentURLPrefix(webDriver, redirectURL)
 	if err != nil {
 		return "", errors.Wrap(err, 0)
 	}
 
-	// Build the exchange request body.
-	exchangeBody := url.Values{}
-	exchangeBody.Set("client_id", appID)
-	exchangeBody.Set("client_secret", appSecret)
-	exchangeBody.Set("redirect_uri", redirectURL)
-	exchangeBody.Set("code", code)
-	exchangeBody.Set("grant_type", "authorization_code")
+	return strings.Split(currentURL, "#")[1], nil
+}
 
-	// Exchange the code for a OAuth token using the secret app id.
-	resp, err := http.Post(exchangeURL, "application/x-www-form-urlencoded", bytes.NewBufferString(exchangeBody.Encode()))
-	if err != nil {
-		return "", errors.Wrap(err, 0)
+func waitForCurrentURLPrefix(webDriver selenium.WebDriver, prefix string) (string, error) {
+	for i := 0; i < 10; i++ {
+		currentURL, err := webDriver.CurrentURL()
+		if err != nil {
+			return "", errors.Wrap(err, 0)
+		}
+		if strings.HasPrefix(currentURL, prefix) {
+			return currentURL, nil
+		}
+		time.Sleep(200 * time.Millisecond)
 	}
-	if resp.StatusCode != http.StatusOK {
-		return "", errors.Errorf("Token exchange request failed with status %v.", resp.StatusCode)
-	}
-	exchangeResp := make(map[string]interface{})
-	if err := json.NewDecoder(resp.Body).Decode(&exchangeResp); err != nil {
-		return "", errors.Wrap(err, 0)
-	}
-
-	return exchangeResp["access_token"].(string), nil
+	return "", fmt.Errorf("Current URL never had prefix '%v'.", prefix)
 }
