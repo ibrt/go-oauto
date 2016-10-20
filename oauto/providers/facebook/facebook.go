@@ -18,7 +18,7 @@ const (
 	exchangeURL         = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=%v&redirect_uri=%v&client_secret=%v&code=%v"
 	emailFieldName      = "email"
 	passwordFieldName   = "pass"
-	loginButtonName     = "login"
+	loginButtonID = "u_0_2"
 	authorizeButtonName = "__CONFIRM__"
 	tokenDivID          = "token"
 )
@@ -60,7 +60,7 @@ func (f *Facebook) Authenticate(webDriver selenium.WebDriver, appID, appSecret, 
 	if err := element.SendKeys(password); err != nil {
 		return "", errors.Wrap(err, 0)
 	}
-	element, err = webDriver.FindElement(selenium.ByName, loginButtonName)
+	element, err = webDriver.FindElement(selenium.ById, loginButtonID)
 	if err != nil {
 		return "", errors.Wrap(err, 0)
 	}
