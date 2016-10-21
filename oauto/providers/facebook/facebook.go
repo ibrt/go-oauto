@@ -18,7 +18,7 @@ const (
 	exchangeURL         = "https://graph.facebook.com/v2.3/oauth/access_token?client_id=%v&redirect_uri=%v&client_secret=%v&code=%v"
 	emailFieldName      = "email"
 	passwordFieldName   = "pass"
-	loginButtonID = "u_0_2"
+	loginButtonID       = "loginbutton"
 	authorizeButtonName = "__CONFIRM__"
 	tokenDivID          = "token"
 )
